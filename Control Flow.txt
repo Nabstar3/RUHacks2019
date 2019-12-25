@@ -1,0 +1,47 @@
+Flow of the program
+
+1.Hi there, can I help you get somewhere or would you like to find when a bus will arrive?
+-When will (bus number) arrive?
+	-Bus (bus number) will arrive in (eta)
+
+	-Sorry that bus doesn't arrive at this stop
+		-You can walk (time) minutes to the next stop to catch this bus (if you can walk there)
+
+	-Sorry I couldn't find (bus number), would you like to repeat the bus you're looking for?
+		-yes (loop)
+		-no (loop back to main)
+
+-How do I get to (destination)
+(Make sure variants of the request are understood)
+	-Did you want to find directions to (destination)?
+		-no (loop)
+		-yes
+			-Take (bus_num) to (arrival_stop) in (departure_time-current_time). Your estimated time of arrival is (eta)
+			-I'm sorry I couldn't find directions to (destination) (If address exists but is uncreachable)
+			-You can walk to (bus_stop) and catch the (bus_number) in (departure_time-current_time) to get to (shortened_version_destination)
+			-I'm sorry I couldnt find that destination, would you like to repeat it?	
+				-yes (loop)
+				-no (loop back to main)
+
+Incoming bus arrival system
+
+objective: Alert riders of an incoming bus with an eta of (<3mins)?
+
+-What if a rider is already interacting with the system?
+
+
+
+Notes
+-Make sure variants of answers and requests are understood
+-If speech isn't recognisable always ask if the wish to repeat
+	-yes (loop)
+	-no (loop back to main)
+-Possible to get bus names?
+-Should we include a touch interface?
+	-Possible to display a map of the route and live locations of the bus using google maps?
+	-Anything that is said by the system should also be displayed
+	-Allow riders to type in their answers/requests
+-Possible to call for assitance?
+	-Emergency services
+	-City transportation office
+	

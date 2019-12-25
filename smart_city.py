@@ -33,7 +33,7 @@ def speech_from_txt(s):
     
 
 def recognize_speech_from_mic(recognizer, microphone):
-    """Transcribe speech from recorded from `microphone`.
+    """Transcribe speech recorded from `microphone`.
 
     Returns a dictionary with three keys:
     "success": a boolean indicating whether or not the API request was
@@ -79,30 +79,23 @@ def recognize_speech_from_mic(recognizer, microphone):
 
     return response
 
-def prompt_user():
+def prompt_user(recogniser,microphone):
     # set the list of words, maxnumber of guesses, and prompt limit
     #WORDS = ["apple", "banana", "grape", "orange", "mango", "lemon"]
     #NUM_GUESSES = 3
     PROMPT_LIMIT = 3
 
-    # create recognizer and mic instances
-    recognizer = sr.Recognizer()
-    microphone = sr.Microphone()
+    
 
     # get a random word from the list
     #word = random.choice(WORDS)
 
     # format the instructions string
-    instructions = (
-        "Speak when asked to.\n"
-    )
 
 
     #speech_from_txt("Speak when asked to")
     
     # show instructions and wait 3 seconds before starting the game
-    print(instructions)
-    time.sleep(1)
     for j in range(PROMPT_LIMIT):
         time.sleep(1)
         print('Speak!\n')
@@ -111,23 +104,8 @@ def prompt_user():
             print("error with API call")
             break
         if text["transcription"]:
-            print("You said: {}.Is this correct? Reply with positive for yes and negative for no\n".format(text["transcription"]))
+            print("You said: {}.".format(text["transcription"]))
             time.sleep(0.2)
-            for k in range(PROMPT_LIMIT):
-                #print("Speak again\n")
-                text_2=recognize_speech_from_mic(recognizer, microphone)
-                if text_2["transcription"]=="positive":
-                    print("Understood\n")
-                    time.sleep(2)
-                    return text["transcription"].lower()
-                if text_2["transcription"]=="negative":
-                    print("Sorry about that, could you please repeat that for me\n")
-                    time.sleep(0.3)
-                    break
-                else:
-                    print("I didn't catch your answer. What did you say?\n")
-                    time.sleep(0.3)
-                    break
 
     # if there was an error, stop the game
     if text["error"]:
@@ -285,27 +263,31 @@ def get_certain_bus_time(bus_num,schedule):
 
 if __name__ == "__main__":
     EXIT="exit"
+    # create recognizer and mic instances
+    recognizer = sr.Recognizer()
+    microphone = sr.Microphone()    
     while(1):
         print("BEGINNING OF THE WHILE LOOP")
-        time.sleep(2)
+        time.sleep(1)
         print("Hello. Say option one to find the next arrival of a bus, option 2 to find transit directions to a place, or exit to start over")
-        time.sleep(4)
+        time.sleep(1)
         for a in range(PROMPT_LIMIT):
-            command=prompt_user()
+            command=prompt_user(recogniser,microphone)
             if command=="option 1":
+                #Check for 2 options:Bus exists but is not at the current stop, bus exists and is at the current stop, bus does not exist
                 print("Great. Which bus would you like to find?\n")
                 for b in range(PROMPT_LIMIT):
-                    command=prompt_user()
+                    command=prompt_user(recogniser,microphone)
                     if command==EXIT:
                         print("Exiting")
                         time.sleep(1)
                         break
                     else:
                         bus_num=command
-                        print("Great!")
+                        print("Great! You're looking for bus"+bus_num)
                         time.sleep(1)
                         print("CHECKING IF BUS EXISTS")
-                        time.sleep(4)
+                        time.sleep(1)
                         raw_schedule=get_raw_schedule()
                         schedule=create_schedule(raw_schedule)
                         bus_num = bus_num.upper()
@@ -323,22 +305,26 @@ if __name__ == "__main__":
                             print(message)
                             time.sleep(7)
                             break
+                        #check if bus is unreachable from this current stop
+                        #elif(bus is unreachable):
+                        #find walking directions to the nearest bus stop if walking distance is <20 mins?
+                        
                         else:
-                            print("I'm sorry, I couldnt find when that bus will arrive. Please state a bus that arrives at this bus station or say exit to start over")
-                            time.sleep(5)
+                            print("I'm sorry, I couldnt find when that bus will arrive. Please state a valid bus number or say exit to start over")
+                            time.sleep(1)
             if command=="option 2":
                 print("Great. Please state your destination address or say exit to start over")
                 for c in range(PROMPT_LIMIT):
-                    command=prompt_user()
+                    command=prompt_user(recogniser,microphone)
                     if command!=EXIT:
-                        destination=command
-                        destination_exists=google_api1(destination)
-                        if destination_exists==True:
-                            print("Great. Would you prefer a route with fewer transfers or less walking? Say transfers for routes with fewer transfers or walking for routes with less walking")
-                            time.sleep(5)
-                            for d in range(PROMPT_LIMIT):
-                                command=prompt_user()
-                                if command=="transfers":
+                        for k in range(PROMPT_LIMIT):
+                            print("Did you want to find directions to"+command+"?")
+                            command=prompt_user(recogniser,microphone)
+                            if ("yes" in command):
+                                destination=command
+                                destination_exists=google_api1(destination)
+                                if destination_exists==True:
+                                    #check if destination is reachable
                                     option="fewer_transfers"
                                     itinerary=google_api2(destination,option)
                                     arrival_stop=itinerary["arrival_stop"]
@@ -346,29 +332,30 @@ if __name__ == "__main__":
                                     arrival_time=itinerary["arrival_time"]
                                     bus_num=itinerary["bus_num"]
                                     print("Take "+bus_num+" to"+arrival_stop+" at "+departure_time+". Your estimated time of arrival is "+arrival_time)
+                                    command=EXIT
                                     break
-                                if command=="walking":
-                                    option="less_walking"
-                                    itinerary=google_api2(destination,option)
-                                    arrival_stop=itinerary["arrival_stop"]
-                                    departure_time=itinerary['Departure_time']
-                                    arrival_time=itinerary["arrival_time"]
-                                    bus_num=itinerary["bus_num"]
-                                    print("Take "+bus_num+" to "+arrival_stop+" at "+departure_time+". Your estimated time of arrival is "+arrival_time)
-                                    break
-                                if command==EXIT:
-                                    print("Exiting")
+                                else:
+                                    print("Sorry, we couldnt find your destination.")
                                     time.sleep(2)
-                                    break
-                                print("Sorry, thats not a valid option. Please select your preference for fewer teansfers or less walking, or say exit to start over")
-                                time.sleep(5)
-                    elif command==EXIT:
-                        print("Exiting")
+                                    command="no"
+                            if ("no" in command):
+                                print ("Please restate the destination you wish to travel to")
+                                break
+                            if("exit" in command):
+                                print("Exiting")
+                                time.sleep(1)
+                                command=EXIT
+                                break
+                            else:
+                                print("Sorry I didn't catch that")
+                                continue
+                    elif (command==EXIT):
+                        print("exiting")
                         time.sleep(2)
                         break
                     else:
-                        print("Sorry, we couldnt find your destination. Please repeat your destination or say exit to start over")
-                        time.sleep(5)
+                        print("Sorry I didn't catch that, could you repeat your answer?")
+                        continue
             if command==EXIT:
                 print("Exiting")
                 time.sleep(2)
@@ -376,5 +363,6 @@ if __name__ == "__main__":
             else:
                 print("Sorry thats not a valid option. Please choose again")
                 time.sleep(1)
+                continue
         
           
