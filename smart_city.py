@@ -79,7 +79,7 @@ def recognize_speech_from_mic(recognizer, microphone):
 
     return response
 
-def prompt_user(recogniser,microphone):
+def prompt_user(recognizer,microphone):
     # set the list of words, maxnumber of guesses, and prompt limit
     #WORDS = ["apple", "banana", "grape", "orange", "mango", "lemon"]
     #NUM_GUESSES = 3
@@ -272,12 +272,12 @@ if __name__ == "__main__":
         print("Hello. Say option one to find the next arrival of a bus, option 2 to find transit directions to a place, or exit to start over")
         time.sleep(1)
         for a in range(PROMPT_LIMIT):
-            command=prompt_user(recogniser,microphone)
+            command=prompt_user(recognizer,microphone)
             if command=="option 1":
                 #Check for 2 options:Bus exists but is not at the current stop, bus exists and is at the current stop, bus does not exist
                 print("Great. Which bus would you like to find?\n")
                 for b in range(PROMPT_LIMIT):
-                    command=prompt_user(recogniser,microphone)
+                    command=prompt_user(recognizer,microphone)
                     if command==EXIT:
                         print("Exiting")
                         time.sleep(1)
@@ -315,11 +315,11 @@ if __name__ == "__main__":
             if command=="option 2":
                 print("Great. Please state your destination address or say exit to start over")
                 for c in range(PROMPT_LIMIT):
-                    command=prompt_user(recogniser,microphone)
+                    command=prompt_user(recognizer,microphone)
                     if command!=EXIT:
                         for k in range(PROMPT_LIMIT):
                             print("Did you want to find directions to"+command+"?")
-                            command=prompt_user(recogniser,microphone)
+                            command=prompt_user(recognizer,microphone)
                             if ("yes" in command):
                                 destination=command
                                 destination_exists=google_api1(destination)

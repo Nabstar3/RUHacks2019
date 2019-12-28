@@ -10,7 +10,7 @@ def google_api1(destination,preference_input):
     endpoint='https://maps.googleapis.com/maps/api/directions/json?'
     api_key='AIzaSyCQAs4T3bVLI2RRJQN3bwsj4ZkSiQHMQUs'
     origin='Yonge+and+Finch+Toronto+Ontario'
-    #destination=input('Where do you want to go:').replace(" ",'+')
+    destination=input('Where do you want to go:').replace(" ",'+')
 
     mode='transit'
     transit_mode='bus'
@@ -81,7 +81,9 @@ def google_api2(destination,preference_input):
                               'Departure_stop':departure_stop1,
                               'Departure_time':departure_time1,
                               'arrival_stop':arrival_stop1,'arrival_time':arrival_time1}
-    return trip_details
+         return trip_details
+    else:
+        exit
 
 
 
